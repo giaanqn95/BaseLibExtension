@@ -37,26 +37,26 @@ class RetrofitService {
 
     private suspend fun getMethod(headers: Map<String, String>, request: KeyRequest, message: Any? = null, codeRequired: Any) {
         LogCat.d(request.name)
-        this.apiCall = { apiInterface.get(headers, KeyRequest.createURL(request)) }
+        this.apiCall = { apiInterface.get(headers, request.url) }
         this.codeRequired = codeRequired
     }
 
     private suspend fun postMethod(headers: Map<String, String>, request: KeyRequest, message: Any? = null, codeRequired: Any): RetrofitService {
         LogCat.d(request.name)
-        this.apiCall = { apiInterface.post(headers, KeyRequest.createURL(request), message) }
+        this.apiCall = { apiInterface.post(headers, request.url, message) }
         this.codeRequired = codeRequired
         return this
     }
 
     private suspend fun putMethod(headers: Map<String, String>, request: KeyRequest, message: Any? = null, codeRequired: Any) {
         LogCat.d(request.name)
-        this.apiCall = { apiInterface.put(headers, KeyRequest.createURL(request), message) }
+        this.apiCall = { apiInterface.put(headers, request.url, message) }
         this.codeRequired = codeRequired
     }
 
     private suspend fun deleteMethod(headers: Map<String, String>, request: KeyRequest, message: Any?, codeRequired: Any) {
         LogCat.d(request.name)
-        this.apiCall = { apiInterface.delete(headers, KeyRequest.createURL(request), message) }
+        this.apiCall = { apiInterface.delete(headers, request.url, message) }
         this.codeRequired = codeRequired
     }
 

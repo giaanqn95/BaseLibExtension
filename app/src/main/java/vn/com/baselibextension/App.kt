@@ -12,7 +12,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        InjectContext.instance.context = this
         ApiClientModule.host = "https://mobidev.eximbank.com.vn"
+        InjectContext.instance.context = this
     }
 }

@@ -3,7 +3,7 @@ package vn.com.baselibextension.dj.module
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import dagger.Module
 import dagger.Provides
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import dagger.Reusable
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import vn.com.baselibextension.setup_retrofit.ApiInterface
@@ -13,12 +13,10 @@ import vn.com.baselibextension.setup_retrofit.UnsafeOkHttpClient
 @Module
 object ApiClientModule {
 
-    var host: String = "https://mobidev.eximbank.com.vn"
-        set(url) {
-            field = url.toHttpUrlOrNull()!!.host
-        }
+    var host = ""
 
     @Provides
+    @Reusable
     @JvmStatic
     fun client(): Retrofit {
         val httpClient = UnsafeOkHttpClient.unsafeOkHttpClient
@@ -31,6 +29,7 @@ object ApiClientModule {
     }
 
     @Provides
+    @Reusable
     @JvmStatic
     fun providePostApi(retrofit: Retrofit): ApiInterface {
         return retrofit.create(ApiInterface::class.java)

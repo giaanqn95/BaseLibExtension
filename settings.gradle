@@ -1,0 +1,3 @@
+include ':BaseLibExtension'
+include ':app'
+rootProject.name = "BaseLibExtension"

@@ -6,7 +6,7 @@ package vn.com.baselibextension.setup_retrofit
  * Email: antranit95@gmail.com
  */
 class Repo(val headers: Map<String, String>,
-           val request: KeyRequest,
+           val url: String,
            val message: Any? = null,
            val codeRequired: Any,
            val typeRepo: TypeRepo = TypeRepo.GET) {

@@ -10,7 +10,6 @@ import vn.com.baselibextension.InjectContext
 import vn.com.baselibextension.dj.component.DaggerApiClientComponent
 import vn.com.baselibextension.dj.module.ApiClientModule
 import vn.com.baselibextension.utils.Constants
-import vn.com.baselibextension.utils.LogCat
 import javax.inject.Inject
 
 
@@ -39,62 +38,58 @@ class RetrofitService {
 
     private suspend fun getMethod(
         headers: Map<String, String>,
-        request: KeyRequest,
+        url: String,
         message: Any? = null,
         codeRequired: Any
     ) {
-        LogCat.d(request.name)
-        this.apiCall = { apiInterface.get(headers, request.url) }
+        this.apiCall = { apiInterface.get(headers, url) }
         this.codeRequired = codeRequired
     }
 
     private suspend fun postMethod(
         headers: Map<String, String>,
-        request: KeyRequest,
+        url: String,
         message: Any? = null,
         codeRequired: Any
     ): RetrofitService {
-        LogCat.d(request.name)
-        this.apiCall = { apiInterface.post(headers, request.url, message) }
+        this.apiCall = { apiInterface.post(headers, url, message) }
         this.codeRequired = codeRequired
         return this
     }
 
     private suspend fun putMethod(
         headers: Map<String, String>,
-        request: KeyRequest,
+        url: String,
         message: Any? = null,
         codeRequired: Any
     ) {
-        LogCat.d(request.name)
-        this.apiCall = { apiInterface.put(headers, request.url, message) }
+        this.apiCall = { apiInterface.put(headers, url, message) }
         this.codeRequired = codeRequired
     }
 
     private suspend fun deleteMethod(
         headers: Map<String, String>,
-        request: KeyRequest,
+        url: String,
         message: Any?,
         codeRequired: Any
     ) {
-        LogCat.d(request.name)
-        this.apiCall = { apiInterface.delete(headers, request.url, message) }
+        this.apiCall = { apiInterface.delete(headers, url, message) }
         this.codeRequired = codeRequired
     }
 
     suspend fun request(repo: Repo): RetrofitService {
         when (repo.typeRepo) {
             TypeRepo.GET -> {
-                getMethod(repo.headers, repo.request, repo.message, repo.codeRequired)
+                getMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
             }
             TypeRepo.POST -> {
-                postMethod(repo.headers, repo.request, repo.message, repo.codeRequired)
+                postMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
             }
             TypeRepo.PUT -> {
-                putMethod(repo.headers, repo.request, repo.message, repo.codeRequired)
+                putMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
             }
             TypeRepo.DELETE -> {
-                deleteMethod(repo.headers, repo.request, repo.message, repo.codeRequired)
+                deleteMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
             }
         }
         return this
@@ -165,7 +160,7 @@ class RetrofitService {
     private fun isOnline(): Boolean {
         var result = false
         val connectivityManager =
-            InjectContext.instance.context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            InjectContext.getContext()!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val networkCapabilities = connectivityManager.activeNetwork ?: return false
             val actNw =

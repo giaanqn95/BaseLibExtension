@@ -13,6 +13,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         ApiClientModule.host = "https://api.islp.dev.intelin.vn"
-        InjectContext.instance.context = this
+        InjectContext.setContext(this)
     }
 }

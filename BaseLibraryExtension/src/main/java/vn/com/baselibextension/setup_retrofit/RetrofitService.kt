@@ -26,7 +26,8 @@ class RetrofitService {
     @Inject
     lateinit var apiInterface: ApiInterface
     private var work: Work = object : Work {
-        override fun onSuccess(result: ResultWrapper.Success<BaseResponse>): ResultWrapper.Success<BaseResponse> = result
+        override fun onSuccess(result: ResultWrapper.Success<BaseResponse>): ResultWrapper.Success<BaseResponse> =
+            result
 
         override fun onError(error: ResultWrapper.Error): ResultWrapper.Error = error
     }
@@ -34,27 +35,48 @@ class RetrofitService {
     private var loading: (isLoading: Boolean) -> Unit = {}
     private var apiCall: (suspend () -> BaseResponse) = { BaseResponse() }
     private var codeRequired: Any = Any()
+    private var listResult: MutableList<ResultWrapper<BaseResponse>> = ArrayList()
 
-    private suspend fun getMethod(headers: Map<String, String>, request: KeyRequest, message: Any? = null, codeRequired: Any) {
+    private suspend fun getMethod(
+        headers: Map<String, String>,
+        request: KeyRequest,
+        message: Any? = null,
+        codeRequired: Any
+    ) {
         LogCat.d(request.name)
         this.apiCall = { apiInterface.get(headers, request.url) }
         this.codeRequired = codeRequired
     }
 
-    private suspend fun postMethod(headers: Map<String, String>, request: KeyRequest, message: Any? = null, codeRequired: Any): RetrofitService {
+    private suspend fun postMethod(
+        headers: Map<String, String>,
+        request: KeyRequest,
+        message: Any? = null,
+        codeRequired: Any
+    ): RetrofitService {
         LogCat.d(request.name)
         this.apiCall = { apiInterface.post(headers, request.url, message) }
         this.codeRequired = codeRequired
         return this
     }
 
-    private suspend fun putMethod(headers: Map<String, String>, request: KeyRequest, message: Any? = null, codeRequired: Any) {
+    private suspend fun putMethod(
+        headers: Map<String, String>,
+        request: KeyRequest,
+        message: Any? = null,
+        codeRequired: Any
+    ) {
         LogCat.d(request.name)
         this.apiCall = { apiInterface.put(headers, request.url, message) }
         this.codeRequired = codeRequired
     }
 
-    private suspend fun deleteMethod(headers: Map<String, String>, request: KeyRequest, message: Any?, codeRequired: Any) {
+    private suspend fun deleteMethod(
+        headers: Map<String, String>,
+        request: KeyRequest,
+        message: Any?,
+        codeRequired: Any
+    ) {
         LogCat.d(request.name)
         this.apiCall = { apiInterface.delete(headers, request.url, message) }
         this.codeRequired = codeRequired
@@ -121,6 +143,25 @@ class RetrofitService {
         }
     }
 
+    fun buildMerge() {
+        loading.invoke(true)
+        listResult.forEach {
+            if (it !is ResultWrapper.Success) {
+                work.onError(ResultWrapper.Error((it as ResultWrapper.Error).code))
+                end.invoke()
+                loading.invoke(false)
+                return
+            }
+        }
+        loading.invoke(false)
+        work.onSuccess(ResultWrapper.Success(BaseResponse()))
+    }
+
+    fun merge(vararg build: ResultWrapper<BaseResponse>): RetrofitService {
+        listResult = build.toMutableList()
+        return this
+    }
+
     private fun isOnline(): Boolean {
         var result = false
         val connectivityManager =
@@ -144,7 +185,6 @@ class RetrofitService {
                         ConnectivityManager.TYPE_ETHERNET -> true
                         else -> false
                     }
-
                 }
             }
         }
@@ -165,19 +205,44 @@ class RetrofitService {
                 else if (response.code == codeRequired)
                     return@withTimeout work.onSuccess(ResultWrapper.Success(response))
 
-                return@withTimeout work.onError(ResultWrapper.Error(response.code, response.message))
+                return@withTimeout work.onError(
+                    ResultWrapper.Error(
+                        response.code,
+                        response.message
+                    )
+                )
             } catch (throwable: Throwable) {
                 when (throwable) {
                     is HttpException -> {
                         val code = throwable.code()
                         if (code in 500..599)
-                            return@withTimeout work.onError(ResultWrapper.Error(ErrorType.ERROR_FORM_SERVER.code, throwable.message))
+                            return@withTimeout work.onError(
+                                ResultWrapper.Error(
+                                    ErrorType.ERROR_FORM_SERVER.code,
+                                    throwable.message
+                                )
+                            )
                         else if (code in 400..499)
-                            return@withTimeout work.onError(ResultWrapper.Error(ErrorType.ERROR_FORM_CLIENT.code, throwable.message))
+                            return@withTimeout work.onError(
+                                ResultWrapper.Error(
+                                    ErrorType.ERROR_FORM_CLIENT.code,
+                                    throwable.message
+                                )
+                            )
 
-                        return@withTimeout work.onError(ResultWrapper.Error(ErrorType.UNKNOW_ERROR_FROM_SERVER.code, throwable.message))
+                        return@withTimeout work.onError(
+                            ResultWrapper.Error(
+                                ErrorType.UNKNOW_ERROR_FROM_SERVER.code,
+                                throwable.message
+                            )
+                        )
                     }
-                    else -> return@withTimeout work.onError(ResultWrapper.Error(ErrorType.UNKNOW_ERROR_FROM_SERVER.code, throwable.message))
+                    else -> return@withTimeout work.onError(
+                        ResultWrapper.Error(
+                            ErrorType.UNKNOW_ERROR_FROM_SERVER.code,
+                            throwable.message
+                        )
+                    )
                 }
             }
         }

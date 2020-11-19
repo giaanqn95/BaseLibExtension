@@ -11,7 +11,7 @@ enum class KeyRequest(val url: String) {
 
     PUT_IDENTITY("pin"),
     LOGIN("auth"),
-    SUBMIT_OTP("auth"),
+    SUBMIT_OTP("user/detail"),
     CHANGE_PIN("pin"),
     OUT_APP("pin"),
     PROCESS_TRANSACTION("process_transaction"),

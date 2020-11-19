@@ -6,7 +6,6 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import kotlinx.coroutines.withTimeout
 import retrofit2.HttpException
-import vn.com.baselibextension.InjectContext
 import vn.com.baselibextension.dj.component.DaggerApiClientComponent
 import vn.com.baselibextension.dj.module.ApiClientModule
 import vn.com.baselibextension.utils.Constants
@@ -20,7 +19,7 @@ import javax.inject.Inject
  * Time: 10:36 AM
  */
 
-class RetrofitService {
+class RetrofitService(val context: Context) {
 
     @Inject
     lateinit var apiInterface: ApiInterface
@@ -160,7 +159,7 @@ class RetrofitService {
     private fun isOnline(): Boolean {
         var result = false
         val connectivityManager =
-            InjectContext.getContext()!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val networkCapabilities = connectivityManager.activeNetwork ?: return false
             val actNw =

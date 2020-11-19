@@ -20,22 +20,22 @@ class InjectContext {
     @Inject
     lateinit var retrofitService: RetrofitService
 
+    var context: Context? = null
+
     companion object {
         var instance = InjectContext()
         var domain: String = ""
-        var context: Context? = null
 
         fun getRetro(): RetrofitService {
             return instance.retrofitService
         }
 
-        @JvmName("getContext1")
         fun getContext(): Context? {
-            return context
+            return instance.context
         }
 
         fun setContext(context: Context): InjectContext {
-            this.context = context
+            this.instance.context = context
             return this.instance
         }
 

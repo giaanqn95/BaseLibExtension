@@ -31,7 +31,7 @@ object ApiClientModule {
     @Provides
     @Reusable
     @JvmStatic
-    fun providePostApi(retrofit: Retrofit): ApiInterface {
-        return retrofit.create(ApiInterface::class.java)
+    fun providePostApi(): ApiInterface {
+        return client().create(ApiInterface::class.java)
     }
 }

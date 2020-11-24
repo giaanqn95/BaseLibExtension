@@ -6,10 +6,8 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import kotlinx.coroutines.withTimeout
 import retrofit2.HttpException
-import vn.com.baselibextension.dj.component.DaggerApiClientComponent
 import vn.com.baselibextension.dj.module.ApiClientModule
 import vn.com.baselibextension.utils.Constants
-import javax.inject.Inject
 
 
 /**
@@ -19,21 +17,27 @@ import javax.inject.Inject
  * Time: 10:36 AM
  */
 
-class RetrofitService(val context: Context) {
+class RetrofitService<T>(val context: Context) {
 
-    @Inject
-    lateinit var apiInterface: ApiInterface
-    private var work: Work = object : Work {
-        override fun onSuccess(result: ResultWrapper.Success<BaseResponse>): ResultWrapper.Success<BaseResponse> =
+    private var apiInterface: ApiInterface = ApiClientModule.providePostApi()
+
+    private var end: () -> Unit = {}
+    private var loading: (isLoading: Boolean) -> Unit = {}
+    private var work: Work<T> = object : Work<T> {
+        override fun onSuccess(result: ResultWrapper.Success<T>): ResultWrapper.Success<T> =
             result
 
         override fun onError(error: ResultWrapper.Error): ResultWrapper.Error = error
     }
-    private var end: () -> Unit = {}
-    private var loading: (isLoading: Boolean) -> Unit = {}
-    private var apiCall: (suspend () -> BaseResponse) = { BaseResponse() }
+    private var processResponse: Process<T> = object : Process<T> {
+        override fun process(response: T, codeRequire: Any): ResultWrapper<T> {
+            return ResultWrapper.Error("")
+        }
+    }
+
+    private lateinit var apiCall: (suspend () -> T)
+    private var listResult: MutableList<ResultWrapper<T>> = ArrayList()
     private var codeRequired: Any = Any()
-    private var listResult: MutableList<ResultWrapper<BaseResponse>> = ArrayList()
 
     private suspend fun getMethod(
         headers: Map<String, String>,
@@ -50,7 +54,7 @@ class RetrofitService(val context: Context) {
         url: String,
         message: Any? = null,
         codeRequired: Any
-    ): RetrofitService {
+    ) = apply {
         this.apiCall = { apiInterface.post(headers, url, message) }
         this.codeRequired = codeRequired
         return this
@@ -76,7 +80,7 @@ class RetrofitService(val context: Context) {
         this.codeRequired = codeRequired
     }
 
-    suspend fun request(repo: Repo): RetrofitService {
+    suspend fun request(repo: Repo) = apply {
         when (repo.typeRepo) {
             TypeRepo.GET -> {
                 getMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
@@ -91,10 +95,9 @@ class RetrofitService(val context: Context) {
                 deleteMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
             }
         }
-        return this
     }
 
-    fun work(work: Work) = apply {
+    fun work(work: Work<T>) = apply {
         this.work = work
     }
 
@@ -106,11 +109,15 @@ class RetrofitService(val context: Context) {
         this.loading = loading
     }
 
+    fun setProcessResponse(process: Process<T>) = apply {
+        this.processResponse = process
+    }
+
     inline fun work(
-        crossinline onSuccess: (success: ResultWrapper.Success<BaseResponse>) -> Unit = {},
+        crossinline onSuccess: (success: ResultWrapper.Success<T>) -> Unit = {},
         crossinline onError: (error: ResultWrapper.Error) -> Unit = {}
-    ) = work(object : Work {
-        override fun onSuccess(result: ResultWrapper.Success<BaseResponse>): ResultWrapper.Success<BaseResponse> {
+    ) = work(object : Work<T> {
+        override fun onSuccess(result: ResultWrapper.Success<T>): ResultWrapper.Success<T> {
             onSuccess.invoke(result)
             return result
         }
@@ -129,7 +136,12 @@ class RetrofitService(val context: Context) {
         onLoading.invoke(it)
     }
 
-    suspend fun build(): ResultWrapper<BaseResponse> {
+    fun merge(vararg build: ResultWrapper<T>) = apply {
+        listResult = build.toMutableList()
+        return this
+    }
+
+    suspend fun build(): ResultWrapper<T> {
         loading.invoke(true)
         return safeApiCall2(apiCall, codeRequired).apply {
             end.invoke()
@@ -137,7 +149,7 @@ class RetrofitService(val context: Context) {
         }
     }
 
-    fun buildMerge() {
+    suspend fun buildMerge() {
         loading.invoke(true)
         listResult.forEach {
             if (it !is ResultWrapper.Success) {
@@ -148,12 +160,7 @@ class RetrofitService(val context: Context) {
             }
         }
         loading.invoke(false)
-        work.onSuccess(ResultWrapper.Success(BaseResponse()))
-    }
-
-    fun merge(vararg build: ResultWrapper<BaseResponse>): RetrofitService {
-        listResult = build.toMutableList()
-        return this
+        work.onSuccess(ResultWrapper.Success(Any() as T))
     }
 
     private fun isOnline(): Boolean {
@@ -185,26 +192,13 @@ class RetrofitService(val context: Context) {
         return result
     }
 
-    private suspend fun safeApiCall2(apiCall: suspend () -> BaseResponse, codeRequired: Any): ResultWrapper<BaseResponse> {
+    private suspend fun safeApiCall2(apiCall: suspend () -> T, codeRequired: Any): ResultWrapper<T> {
         return withTimeout(Constants.TIME_OUT) {
             if (!isOnline())
                 return@withTimeout work.onError(ResultWrapper.Error(ErrorType.NO_INTERNET.code))
             try {
                 val response = apiCall.invoke()
-                if (codeRequired is Array<*>)
-                    codeRequired.forEach {
-                        if (response.code == it)
-                            return@withTimeout work.onSuccess(ResultWrapper.Success(response))
-                    }
-                else if (response.code == codeRequired)
-                    return@withTimeout work.onSuccess(ResultWrapper.Success(response))
-
-                return@withTimeout work.onError(
-                    ResultWrapper.Error(
-                        response.code,
-                        response.message
-                    )
-                )
+                return@withTimeout processResponse.process(response, codeRequired)
             } catch (throwable: Throwable) {
                 when (throwable) {
                     is HttpException -> {
@@ -242,13 +236,13 @@ class RetrofitService(val context: Context) {
         }
     }
 
-    interface Work {
-        fun onSuccess(result: ResultWrapper.Success<BaseResponse>): ResultWrapper.Success<BaseResponse>
+    interface Work<T> {
+        fun onSuccess(result: ResultWrapper.Success<T>): ResultWrapper.Success<T>
 
         fun onError(error: ResultWrapper.Error): ResultWrapper.Error
     }
 
-    init {
-        DaggerApiClientComponent.builder().networkModule(ApiClientModule).build().inject(this)
+    interface Process<T> {
+        fun process(response: T, codeRequire: Any): ResultWrapper<T>
     }
 }

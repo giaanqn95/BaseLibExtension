@@ -12,18 +12,18 @@ import retrofit2.http.*
  */
 interface ApiInterface {
     @GET
-    suspend fun get(@HeaderMap headers: Map<String, String>, @Url url: String): BaseResponse
+    suspend fun<T> get(@HeaderMap headers: Map<String, String>, @Url url: String): T
 
     @POST
-    suspend fun post(@HeaderMap headers: Map<String, String>, @Url url: String, @Body o: Any?): BaseResponse
+    suspend fun<T> post(@HeaderMap headers: Map<String, String>, @Url url: String, @Body o: Any?): T
 
     @PUT
-    suspend fun put(@HeaderMap headers: Map<String, String>, @Url url: String, @Body o: Any?): BaseResponse
+    suspend fun<T> put(@HeaderMap headers: Map<String, String>, @Url url: String, @Body o: Any?): T
 
     @HTTP(method = "DELETE", hasBody = true)
-    suspend fun delete(@HeaderMap headers: Map<String, String>, @Url url: String, @Body o: Any?): BaseResponse
+    suspend fun<T> delete(@HeaderMap headers: Map<String, String>, @Url url: String, @Body o: Any?): T
 
     @Multipart
     @POST
-    suspend fun uploadFile(@Url url: String, @Part file: MultipartBody.Part?): BaseResponse
+    suspend fun<T> uploadFile(@Url url: String, @Part file: MultipartBody.Part?): T
 }

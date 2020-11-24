@@ -12,10 +12,16 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
 
 
 fun View.visible() {
@@ -150,5 +156,36 @@ fun Fragment.pop() {
 fun Fragment.onBackPress(unit: () -> Unit) {
     requireActivity().onBackPressedDispatcher.addCallback(this) {
         unit.invoke()
+    }
+}
+
+fun <T> Flow<T>.launchWhenStartedUntilStopped(owner: LifecycleOwner) {
+    if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
+
+        return
+    }
+    owner.lifecycle.addObserver(LifeCycleBoundObserver(this))
+}
+
+class LifeCycleBoundObserver<T>(private val flow: Flow<T>) : DefaultLifecycleObserver {
+
+    private var job: Job? = null
+
+    override fun onStart(owner: LifecycleOwner) {
+        job = flow.launchIn(owner.lifecycleScope)
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        cancelJob()
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        owner.lifecycle.removeObserver(this)
+    }
+
+    private inline fun cancelJob() {
+        job?.cancel()
+        job = null
     }
 }

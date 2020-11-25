@@ -22,7 +22,7 @@ class InjectContet {
         }
 
         fun initRetroService(context: Context) = apply {
-            this.instance.retrofitService = RetrofitService(context)
+            this.instance.retrofitService = RetrofitService(context,BaseResponse())
         }
     }
 }

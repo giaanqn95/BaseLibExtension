@@ -17,7 +17,7 @@ import vn.com.baselibextension.utils.Constants
  * Time: 10:36 AM
  */
 
-class RetrofitService<T>(val context: Context) {
+class RetrofitService<T>(val context: Context, val value: T) {
 
     private var apiInterface: ApiInterface = ApiClientModule.providePostApi()
 
@@ -156,7 +156,7 @@ class RetrofitService<T>(val context: Context) {
             }
         }
         loading.invoke(false)
-        work.onSuccess(ResultWrapper.Success(Any() as T))
+        work.onSuccess(ResultWrapper.Success(value))
     }
 
     private fun isOnline(): Boolean {
@@ -194,7 +194,13 @@ class RetrofitService<T>(val context: Context) {
                 return@withTimeout work.onError(ResultWrapper.Error(ErrorType.NO_INTERNET.code))
             try {
                 val response = apiCall.invoke()
-                return@withTimeout processResponse!!.process(JSON.encode(response), codeRequired)
+                val process = processResponse!!.process(JSON.encode(response), codeRequired)
+                if (process is ResultWrapper.Success<T>) {
+                    work.onSuccess(ResultWrapper.Success(process.value))
+                } else {
+                    work.onError(ResultWrapper.Error((process as ResultWrapper.Error).code))
+                }
+                return@withTimeout process
             } catch (throwable: Throwable) {
                 when (throwable) {
                     is HttpException -> {

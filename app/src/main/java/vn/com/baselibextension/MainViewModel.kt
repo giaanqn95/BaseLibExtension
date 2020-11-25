@@ -36,7 +36,7 @@ class MainViewModel() : ViewModel() {
 
     fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
         InjectContet.getRetro().merge(call1(), call2()).work(
-            onSuccess = { LogCat.d("mergeFunc onSuccess") },
+            onSuccess = { LogCat.d("mergeFuntion onSuccess") },
             onError = { LogCat.d("mergeFunc onError") }
         ).end {
 
@@ -46,7 +46,7 @@ class MainViewModel() : ViewModel() {
     suspend fun call1(): ResultWrapper<BaseResponse> {
         val header: HashMap<String, String> = HashMap()
         header["token"] =
-            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDU4MzkzNTQ3MDksImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNTc1Mjk1NDcwOX0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiIwNTExYzhmZTAwMDFiMmJiMjUzNDAxNzVkZTU1OWY1NSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.XI11QCu85NehY4yn2r5g7srSDrf3GLH5rV2HXBSw2sFib7q-8ENntmL1rhLqaDqV_aFIwzZiNiX0a_iLDa4ImHdo_X48Ta7XjgpMdRm3AJbQ8ympBMuvM7RPfo2s_uYQ5l29V4rwd7k7B2ffZNhSsk_rk5DZMwagsgTqW6TDWvxpwSSBRWUm1LheruduvvxHO13WZuWhklhWaYHKS-07iFyoQV5OjilgFFDN0y4JKcP19uyaECC1S9p0WVS60SVcTMx8N3wpdHJbXQVuZywP18BfHHspsg6ENfitK0CiZZLrRm0beF-an8RmHXg845I092Ts5DJ5YHrhE9xxNz25qw"
+            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDYzNzQxNzQ4ODIsImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNjI4Nzc3NDg4Mn0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiJjNGFkMGVmYjAwMDFiZjc0ZTljYjAxNzVmZTM2NTRhZSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJyYW5rIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.dyI8w10bFsA4WI30kQ_zeFtbLb6fJ27MPTD8P-5Ma1T-kOUsuacCywSmMkS-1XcSL1aumMC_V1th9aO_ZOu2l5pJvmXTDNNIfGzUQscBhGocYefk0GEvQxmxTLL9d5OIijGo-kkhMPWsA5_3sO9S9LRx6kHlWLXABh1jZapKNFg7V0A6C989twExcuQ3_piNH4a62GJbdAxZGiIdEhG2ZBiFuCkCU2I0haRzzdcg2_EGaz4idsPhJQ2Ur_v1B3zXs7u_7W7zfP11lRN-PxcvI1_EgjcUaH0dcDACOWAwRO2Q8BModcAvsh4shvrQ63MjTa4cgICetC-G-FmJAppHfQ"
         return InjectContet.getRetro().request(
             Repo(
                 headers = header,
@@ -61,7 +61,7 @@ class MainViewModel() : ViewModel() {
     suspend fun call2(): ResultWrapper<BaseResponse> {
         val header: HashMap<String, String> = HashMap()
         header["token"] =
-            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDU4MzkzNTQ3MDksImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNTc1Mjk1NDcwOX0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiIwNTExYzhmZTAwMDFiMmJiMjUzNDAxNzVkZTU1OWY1NSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.XI11QCu85NehY4yn2r5g7srSDrf3GLH5rV2HXBSw2sFib7q-8ENntmL1rhLqaDqV_aFIwzZiNiX0a_iLDa4ImHdo_X48Ta7XjgpMdRm3AJbQ8ympBMuvM7RPfo2s_uYQ5l29V4rwd7k7B2ffZNhSsk_rk5DZMwagsgTqW6TDWvxpwSSBRWUm1LheruduvvxHO13WZuWhklhWaYHKS-07iFyoQV5OjilgFFDN0y4JKcP19uyaECC1S9p0WVS60SVcTMx8N3wpdHJbXQVuZywP18BfHHspsg6ENfitK0CiZZLrRm0beF-an8RmHXg845I092Ts5DJ5YHrhE9xxNz25qw"
+            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDYzNzQxNzQ4ODIsImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNjI4Nzc3NDg4Mn0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiJjNGFkMGVmYjAwMDFiZjc0ZTljYjAxNzVmZTM2NTRhZSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJyYW5rIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.dyI8w10bFsA4WI30kQ_zeFtbLb6fJ27MPTD8P-5Ma1T-kOUsuacCywSmMkS-1XcSL1aumMC_V1th9aO_ZOu2l5pJvmXTDNNIfGzUQscBhGocYefk0GEvQxmxTLL9d5OIijGo-kkhMPWsA5_3sO9S9LRx6kHlWLXABh1jZapKNFg7V0A6C989twExcuQ3_piNH4a62GJbdAxZGiIdEhG2ZBiFuCkCU2I0haRzzdcg2_EGaz4idsPhJQ2Ur_v1B3zXs7u_7W7zfP11lRN-PxcvI1_EgjcUaH0dcDACOWAwRO2Q8BModcAvsh4shvrQ63MjTa4cgICetC-G-FmJAppHfQ"
         return InjectContet.getRetro().request(
             Repo(
                 headers = header,

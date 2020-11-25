@@ -29,11 +29,7 @@ class RetrofitService<T>(val context: Context) {
 
         override fun onError(error: ResultWrapper.Error): ResultWrapper.Error = error
     }
-    private var processResponse: Process<T> = object : Process<T> {
-        override fun process(response: T, codeRequire: Any): ResultWrapper<T> {
-            return ResultWrapper.Error("")
-        }
-    }
+    private var processResponse: Process<T>? = null
 
     private lateinit var apiCall: (suspend () -> T)
     private var listResult: MutableList<ResultWrapper<T>> = ArrayList()
@@ -198,7 +194,7 @@ class RetrofitService<T>(val context: Context) {
                 return@withTimeout work.onError(ResultWrapper.Error(ErrorType.NO_INTERNET.code))
             try {
                 val response = apiCall.invoke()
-                return@withTimeout processResponse.process(response, codeRequired)
+                return@withTimeout processResponse!!.process(JSON.encode(response), codeRequired)
             } catch (throwable: Throwable) {
                 when (throwable) {
                     is HttpException -> {
@@ -243,6 +239,6 @@ class RetrofitService<T>(val context: Context) {
     }
 
     interface Process<T> {
-        fun process(response: T, codeRequire: Any): ResultWrapper<T>
+        fun process(response: String, codeRequire: Any): ResultWrapper<T>
     }
 }

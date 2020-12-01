@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import kotlinx.coroutines.withTimeout
+import okhttp3.MultipartBody
 import retrofit2.HttpException
 import vn.com.baselibextension.dj.module.ApiClientModule
 import vn.com.baselibextension.utils.Constants
@@ -76,6 +77,15 @@ class RetrofitService<T>(val context: Context, val value: T) {
         this.codeRequired = codeRequired
     }
 
+    suspend fun uploadFile(
+        url: String,
+        message: MultipartBody.Part?,
+        codeRequired: Any
+    ) {
+        this.apiCall = { apiInterface.uploadFile(url, message) }
+        this.codeRequired = codeRequired
+    }
+
     suspend fun request(repo: Repo) = apply {
         when (repo.typeRepo) {
             TypeRepo.GET -> {
@@ -89,6 +99,9 @@ class RetrofitService<T>(val context: Context, val value: T) {
             }
             TypeRepo.DELETE -> {
                 deleteMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
+            }
+            TypeRepo.POST_MULTIPART -> {
+                uploadFile(repo.url, repo.multiPart, repo.codeRequired)
             }
         }
     }

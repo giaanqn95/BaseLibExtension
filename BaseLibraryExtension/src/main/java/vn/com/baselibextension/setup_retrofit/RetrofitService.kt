@@ -41,7 +41,7 @@ class RetrofitService<T>(val context: Context, val value: T) {
         message: Any? = null,
         codeRequired: Any
     ) {
-        this.apiCall = { apiInterface.get(headers, url) }
+        this.apiCall = { apiInterface.get(headers, url + message) }
         this.codeRequired = codeRequired
     }
 

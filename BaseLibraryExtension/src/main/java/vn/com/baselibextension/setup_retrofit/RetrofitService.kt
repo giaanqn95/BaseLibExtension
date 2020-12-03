@@ -198,7 +198,7 @@ class RetrofitService<T>(val context: Context, val value: T) {
                 if (process is ResultWrapper.Success<T>) {
                     work.onSuccess(ResultWrapper.Success(process.value))
                 } else {
-                    work.onError(ResultWrapper.Error((process as ResultWrapper.Error).code))
+                    work.onError(ResultWrapper.Error((process as ResultWrapper.Error).code, process.message))
                 }
                 return@withTimeout process
             } catch (throwable: Throwable) {

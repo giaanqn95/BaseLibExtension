@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import vn.com.baselibextension.setup_retrofit.*
+import vn.com.baselibextension.setup_retrofit.BaseResponse
+import vn.com.baselibextension.setup_retrofit.Repo
+import vn.com.baselibextension.setup_retrofit.ResultWrapper
+import vn.com.baselibextension.setup_retrofit.TypeRepo
 import vn.com.baselibextension.utils.LogCat
 
 /**
@@ -26,7 +29,7 @@ class MainViewModel() : ViewModel() {
         InjectContet.getRetro().request(
             Repo(
                 headers = header,
-                url = KeyRequest.SUBMIT_OTP.url,
+                url = "KeyRequest.SUBMIT_OTP.url",
                 message = LoginBinding("username", "Hash.getPublicKey(password)"),
                 codeRequired = "CARD_2001",
                 typeRepo = TypeRepo.GET
@@ -51,7 +54,7 @@ class MainViewModel() : ViewModel() {
         ).request(
             Repo(
                 headers = header,
-                url = KeyRequest.SUBMIT_OTP.url,
+                url = "KeyRequest.SUBMIT_OTP.url",
                 message = null,
                 codeRequired = "CARD_2001",
                 typeRepo = TypeRepo.GET
@@ -69,7 +72,7 @@ class MainViewModel() : ViewModel() {
         ).request(
             Repo(
                 headers = header,
-                url = KeyRequest.SUBMIT_OTP.url,
+                url ="KeyRequest.SUBMIT_OTP.url",
                 message = null,
                 codeRequired = "CARD_2001",
                 typeRepo = TypeRepo.GET

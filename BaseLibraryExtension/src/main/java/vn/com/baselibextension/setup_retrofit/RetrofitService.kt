@@ -204,7 +204,7 @@ class RetrofitService<T>(val context: Context, val value: T) {
     private suspend fun safeApiCall2(apiCall: suspend () -> T, codeRequired: Any): ResultWrapper<T> {
         return withTimeout(Constants.TIME_OUT) {
             if (!isOnline())
-                return@withTimeout work.onError(ResultWrapper.Error(ErrorType.NO_INTERNET.code))
+                return@withTimeout work.onError(ResultWrapper.Error("NoInternet"))
             try {
                 val response = apiCall.invoke()
                 val process = processResponse!!.process(JSON.encode(response), codeRequired)
@@ -219,33 +219,13 @@ class RetrofitService<T>(val context: Context, val value: T) {
                     is HttpException -> {
                         val code = throwable.code()
                         if (code in 500..599)
-                            return@withTimeout work.onError(
-                                ResultWrapper.Error(
-                                    ErrorType.ERROR_FORM_SERVER.code,
-                                    throwable.message
-                                )
-                            )
+                            return@withTimeout work.onError(ResultWrapper.Error("$code", throwable.message))
                         else if (code in 400..499)
-                            return@withTimeout work.onError(
-                                ResultWrapper.Error(
-                                    ErrorType.ERROR_FORM_CLIENT.code,
-                                    throwable.message
-                                )
-                            )
+                            return@withTimeout work.onError(ResultWrapper.Error("$code", throwable.message))
 
-                        return@withTimeout work.onError(
-                            ResultWrapper.Error(
-                                ErrorType.UNKNOW_ERROR_FROM_SERVER.code,
-                                throwable.message
-                            )
-                        )
+                        return@withTimeout work.onError(ResultWrapper.Error("$code", throwable.message))
                     }
-                    else -> return@withTimeout work.onError(
-                        ResultWrapper.Error(
-                            ErrorType.UNKNOW_ERROR_FROM_SERVER.code,
-                            throwable.message
-                        )
-                    )
+                    else -> return@withTimeout work.onError(ResultWrapper.Error("", throwable.message))
                 }
             }
         }

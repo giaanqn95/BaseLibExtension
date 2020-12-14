@@ -150,6 +150,11 @@ class RetrofitService<T>(val context: Context, val value: T) {
         return this
     }
 
+    fun merge(build: MutableList<ResultWrapper<T>>) = apply {
+        listResult = build
+        return this
+    }
+
     suspend fun build(): ResultWrapper<T> {
         loading.invoke(true)
         return safeApiCall2(apiCall, codeRequired).apply {

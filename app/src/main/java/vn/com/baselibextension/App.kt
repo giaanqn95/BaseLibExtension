@@ -16,10 +16,10 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        ApiClientModule.host = "https://api.islp.dev.intelin.vn"
+        ApiClientModule.host = "https://api.tiktik.dev.intelin.vn"
         InjectContet.initRetroService(this)
         InjectContet.getRetro().setProcessResponse(object : RetrofitService.Process<BaseResponse> {
-            override fun process(response: String, codeRequire: Any): ResultWrapper<BaseResponse> {
+            override fun process(response: String, codeRequire: Any?): ResultWrapper<BaseResponse> {
                 val parse = JSON.decode(response, BaseResponse::class.java)
                 if (codeRequire is Array<*>) {
                     codeRequire.forEach {

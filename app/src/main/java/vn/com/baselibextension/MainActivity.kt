@@ -17,6 +17,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.isSuccess.observe(this){
+            Toast.makeText(this,"$it", Toast.LENGTH_LONG).show()
+        }
         viewModel.mergeFunc()
         viewModel.stateFlow.onEach {
 

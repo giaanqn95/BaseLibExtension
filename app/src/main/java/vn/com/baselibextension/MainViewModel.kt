@@ -1,5 +1,6 @@
 package vn.com.baselibextension
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,10 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import vn.com.baselibextension.setup_retrofit.BaseResponse
-import vn.com.baselibextension.setup_retrofit.Repo
-import vn.com.baselibextension.setup_retrofit.ResultWrapper
-import vn.com.baselibextension.setup_retrofit.TypeRepo
+import vn.com.baselibextension.setup_retrofit.*
 import vn.com.baselibextension.utils.LogCat
 
 /**
@@ -22,66 +20,66 @@ import vn.com.baselibextension.utils.LogCat
  */
 class MainViewModel() : ViewModel() {
 
+    val isSuccess = MutableLiveData<Boolean>()
+
     fun callSomething() = CoroutineScope(Dispatchers.IO).launch {
         val header: HashMap<String, String> = HashMap()
-        header["token"] =
-            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDYzNzQxNzQ4ODIsImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNjI4Nzc3NDg4Mn0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiJjNGFkMGVmYjAwMDFiZjc0ZTljYjAxNzVmZTM2NTRhZSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJyYW5rIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.dyI8w10bFsA4WI30kQ_zeFtbLb6fJ27MPTD8P-5Ma1T-kOUsuacCywSmMkS-1XcSL1aumMC_V1th9aO_ZOu2l5pJvmXTDNNIfGzUQscBhGocYefk0GEvQxmxTLL9d5OIijGo-kkhMPWsA5_3sO9S9LRx6kHlWLXABh1jZapKNFg7V0A6C989twExcuQ3_piNH4a62GJbdAxZGiIdEhG2ZBiFuCkCU2I0haRzzdcg2_EGaz4idsPhJQ2Ur_v1B3zXs7u_7W7zfP11lRN-PxcvI1_EgjcUaH0dcDACOWAwRO2Q8BModcAvsh4shvrQ63MjTa4cgICetC-G-FmJAppHfQ"
-        InjectContet.getRetro().request(
+        header["token"] = ""
+        InjectContet.getRetro().build(
             Repo(
                 headers = header,
-                url = "KeyRequest.SUBMIT_OTP.url",
-                message = LoginBinding("username", "Hash.getPublicKey(password)"),
-                codeRequired = "CARD_2001",
+                url = "user/register/",
+                message = "0901169215",
+                codeRequired = "200",
                 typeRepo = TypeRepo.GET
-            )
-        ).work(
-            onSuccess = { LogCat.d("1 - ${it.value.data()}") },
-            onError = { LogCat.d("1 - ${it.message}") }
-        ).loading().build()
+            ),
+            Request<BaseResponse>().work(
+                onSuccess = { LogCat.d("onWork 1 - ${it.value.data()} ${it.value.message}") },
+                onError = { LogCat.d("onWork 1 - ${it.message}") }
+            ).loading {})
     }
 
     fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
-        InjectContet.getRetro().merge(call1(), call2()).end {}.loading().buildMerge()
+        InjectContet.getRetro().merge(arrayOf(callFirst(), callSecond()).toMutableList()).setEnd {}.setLoading { }.work(
+            onSuccess = { isSuccess.postValue(true) },
+            onError = { isSuccess.postValue(false) },
+        ).buildMerge()
     }
 
-    suspend fun call1(): ResultWrapper<BaseResponse> {
+    suspend fun callFirst(): ResultWrapper<BaseResponse> {
         val header: HashMap<String, String> = HashMap()
-        header["token"] =
-            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDYzNzQxNzQ4ODIsImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNjI4Nzc3NDg4Mn0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiJjNGFkMGVmYjAwMDFiZjc0ZTljYjAxNzVmZTM2NTRhZSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJyYW5rIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.dyI8w10bFsA4WI30kQ_zeFtbLb6fJ27MPTD8P-5Ma1T-kOUsuacCywSmMkS-1XcSL1aumMC_V1th9aO_ZOu2l5pJvmXTDNNIfGzUQscBhGocYefk0GEvQxmxTLL9d5OIijGo-kkhMPWsA5_3sO9S9LRx6kHlWLXABh1jZapKNFg7V0A6C989twExcuQ3_piNH4a62GJbdAxZGiIdEhG2ZBiFuCkCU2I0haRzzdcg2_EGaz4idsPhJQ2Ur_v1B3zXs7u_7W7zfP11lRN-PxcvI1_EgjcUaH0dcDACOWAwRO2Q8BModcAvsh4shvrQ63MjTa4cgICetC-G-FmJAppHfQ"
-        return InjectContet.getRetro().work(
-            onSuccess = { LogCat.d("1 - ${it.value.data()}") },
-            onError = { LogCat.d("1 - ${it.message}") }
-        ).request(
+        header["token"] = ""
+        return InjectContet.getRetro().build(
             Repo(
                 headers = header,
-                url = "KeyRequest.SUBMIT_OTP.url",
-                message = null,
-                codeRequired = "CARD_2001",
+                url = "user/register/",
+                message = "0901169215",
+                codeRequired = "USERNAME_2000",
                 typeRepo = TypeRepo.GET
-            )
-        ).build()
+            ), Request<BaseResponse>().work(
+                onSuccess = { LogCat.d("onWork 1 - ${it.value.data()} ${it.value.message}") },
+                onError = { LogCat.d("onWork 1 - ${it.message}") }
+            ))
     }
 
-    suspend fun call2(): ResultWrapper<BaseResponse> {
+    suspend fun callSecond(): ResultWrapper<BaseResponse> {
         val header: HashMap<String, String> = HashMap()
-        header["token"] =
-            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDYzNzQxNzQ4ODIsImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNjI4Nzc3NDg4Mn0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiJjNGFkMGVmYjAwMDFiZjc0ZTljYjAxNzVmZTM2NTRhZSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJyYW5rIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.dyI8w10bFsA4WI30kQ_zeFtbLb6fJ27MPTD8P-5Ma1T-kOUsuacCywSmMkS-1XcSL1aumMC_V1th9aO_ZOu2l5pJvmXTDNNIfGzUQscBhGocYefk0GEvQxmxTLL9d5OIijGo-kkhMPWsA5_3sO9S9LRx6kHlWLXABh1jZapKNFg7V0A6C989twExcuQ3_piNH4a62GJbdAxZGiIdEhG2ZBiFuCkCU2I0haRzzdcg2_EGaz4idsPhJQ2Ur_v1B3zXs7u_7W7zfP11lRN-PxcvI1_EgjcUaH0dcDACOWAwRO2Q8BModcAvsh4shvrQ63MjTa4cgICetC-G-FmJAppHfQ"
-        return InjectContet.getRetro().work(
-            onSuccess = { LogCat.d("2 - ${it.value.data()}") },
-            onError = { LogCat.d("2 - ${it.message}") }
-        ).request(
+        header["token"] = ""
+        return InjectContet.getRetro().build(
             Repo(
                 headers = header,
-                url ="KeyRequest.SUBMIT_OTP.url",
-                message = null,
-                codeRequired = "CARD_2001",
+                url = "user/register/",
+                message = "0901169215",
+                codeRequired = "USERNAME_2000",
                 typeRepo = TypeRepo.GET
-            )
-        ).build()
+            ), Request<BaseResponse>().work(
+                onSuccess = { LogCat.d("onWork 2 - ${it.value.data()} ${it.value.message}") },
+                onError = { LogCat.d("onWork 2 - ${it.message}") }
+            ))
     }
 
     fun repeat(): Flow<ResultWrapper<BaseResponse>> = flow {
-        emit(call2())
+        emit(callSecond())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -53,7 +53,7 @@ This library makes it easier and faster for devs to make API calls
 - Merge function
 ```
  fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
-        InjectContet.getRetro().merge(arrayOf(callFirst(), callSecond()).toMutableList())
+        RetrofitService<YourBaseResponseClass>().merge(arrayOf(callFirst(), callSecond()).toMutableList())
         .work(
             onSuccess = { isSuccess.postValue(true) },
             onError = { isSuccess.postValue(false) },
@@ -66,6 +66,7 @@ You can configure the baseURL and API handling in Application:
 ApiClientModule.host = "base_url"
 ```
 Configure RetroService: 
+  Example:
 ```
 class InjectRetroService {
 
@@ -83,6 +84,16 @@ class InjectRetroService {
         fun initRetroService(context: Context) = apply {
             this.instance.retrofitService = RetrofitService(context, YourBaseResponseClass())
         }
+    }
+}
+
+class App : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+        ApiClientModule.host = "url"
+        InjectContet.initRetroService(this)
+        InjectContet.getRetro().setProcessResponse(...)
     }
 }
 ```

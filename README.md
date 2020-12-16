@@ -5,55 +5,60 @@
 This library makes it easier and faster for devs to make API calls
 
 - Example
-```bash
-fun simpleRequest(merchantId: String, cardNumber: String) = viewModelScope().launch {
-        call().request(
+```
+        RetrofitService<YourBaseResponseClass>().build(
             Repo(
-                headers = Header(),
-                url = url,
+                headers = header,
+                url = "url",
+                message = Any(),
                 codeRequired = "CodeSuccessAPI",
-                message = body(Any),
-                typeRepo = TypeRepo.GET,
-            )
-        ).work(
+                typeRepo = TypeRepo.GET
+            ),work(
             onSuccess = { //Do something },
             onError = { //Do something }
-        ).loading { boolean }.build()
-    }
+        ))
+   
 ```
 - Or return state request
 ```
-    suspend fun requestReturnState(uri: MultipartBody.Part?): ResultWrapper<BaseResponse> = 
-        call().request(
+    suspend fun requestReturnState(uri: MultipartBody.Part?): ResultWrapper<YourBaseResponseClass> = 
+        RetrofitService<YourBaseResponseClass>().build(
             Repo(
-              headers = Header(),
-              url = url,
-              codeRequired = "CodeSuccessAPI",
-              message = body(Any),
-              typeRepo = TypeRepo.POST_MULTIPART,
-              multiPart = uri
-              )
-        ).work(
+                headers = header,
+                url = "url",
+                message = Any(),
+                codeRequired = "CodeSuccessAPI",
+                typeRepo = TypeRepo.GET
+            ),work(
             onSuccess = { //Do something },
             onError = { //Do something }
-        ).build()
+        ))
 ```
 - With multipart
 ```
-suspend fun jobMultiLink(uri: MultipartBody.Part?): ResultWrapper<BaseResponse> = 
-    call().request(
-        Repo(
-            headers = Header(),
-            url = url,
-            codeRequired = "CodeSuccessAPI",
-            message = body(Any),
-            typeRepo = TypeRepo.POST_MULTIPART,
-            multiPart = uri
-        )
-    ).work(
-        onSuccess = { //Do something },
-        onError = { //Do something }
-    ).build()
+    RetrofitService<YourBaseResponseClass>().build(
+             Repo(
+                headers = header,
+                url = "url",
+                message = Any(),
+                codeRequired = "CodeSuccessAPI",
+                typeRepo = TypeRepo.GET,
+                multiPart = 
+            ),work(
+            onSuccess = { //Do something },
+            onError = { //Do something }
+        ))
+```
+
+- Merge function
+```
+ fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
+        InjectContet.getRetro().merge(arrayOf(callFirst(), callSecond()).toMutableList())
+        .work(
+            onSuccess = { isSuccess.postValue(true) },
+            onError = { isSuccess.postValue(false) },
+        ).buildMerge()
+    }
 ```
 
 You can configure the baseURL and API handling in Application:

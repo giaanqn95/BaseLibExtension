@@ -11,7 +11,7 @@ class Repo(
     val headers: Map<String, String>,
     val url: String,
     val message: Any? = null,
-    val codeRequired: Any,
+    val codeRequired: Any? = null,
     val typeRepo: TypeRepo = TypeRepo.GET,
     val multiPart: MultipartBody.Part? = null
 )

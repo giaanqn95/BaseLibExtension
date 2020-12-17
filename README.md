@@ -13,7 +13,8 @@ This library makes it easier and faster for devs to make API calls
                 message = Any(),
                 codeRequired = "CodeSuccessAPI",
                 typeRepo = TypeRepo.GET
-            ),work(
+            ),
+            Request<BaseResponse>().work(
             onSuccess = { //Do something },
             onError = { //Do something }
         ))
@@ -29,7 +30,8 @@ This library makes it easier and faster for devs to make API calls
                 message = Any(),
                 codeRequired = "CodeSuccessAPI",
                 typeRepo = TypeRepo.GET
-            ),work(
+            ),
+            Request<BaseResponse>().work(
             onSuccess = { //Do something },
             onError = { //Do something }
         ))
@@ -43,8 +45,9 @@ This library makes it easier and faster for devs to make API calls
                 message = Any(),
                 codeRequired = "CodeSuccessAPI",
                 typeRepo = TypeRepo.GET,
-                multiPart = 
-            ),work(
+                multiPart = MultiPart
+            ),
+            Request<BaseResponse>().work(
             onSuccess = { //Do something },
             onError = { //Do something }
         ))
@@ -53,11 +56,27 @@ This library makes it easier and faster for devs to make API calls
 - Merge function
 ```
  fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
-        RetrofitService<YourBaseResponseClass>().merge(arrayOf(callFirst(), callSecond()).toMutableList())
+        RetrofitService<YourBaseResponseClass>().merge(arrayOf(callFirst, callSecond).toMutableList())
         .work(
             onSuccess = { isSuccess.postValue(true) },
             onError = { isSuccess.postValue(false) },
         ).buildMerge()
+    }
+    
+ val callFirst: suspend () -> ResultWrapper<BaseResponse> = {
+        val header: HashMap<String, String> = HashMap()
+        header["token"] = ""
+        InjectContet.getRetro().build(
+            Repo(
+                headers = header,
+                url = "url",
+                message = Any(),
+                codeRequired = "CodeSuccessAPI",
+                typeRepo = TypeRepo.GET,
+            ), Request<YourBaseResponse>().work(
+                onSuccess = { LogCat.d("onWork 1 - ${it.value.data()} ${it.value.message}") },
+                onError = { LogCat.d("onWork 1 - ${it.message}") }
+            ))
     }
 ```
 
@@ -99,7 +118,7 @@ class App : Application() {
 ```
 Set up process response:
 ```
-InjectContext.getRetro().setProcessResponse(object : RetrofitService.Process<YourBaseResponseClass> {
+RetrofitService<YourBaseResponseClass>().setProcessResponse(object : RetrofitService.Process<YourBaseResponseClass> {
             override fun process(response: String, codeRequire: Any): ResultWrapper<YourBaseResponseClass> {
                 //this response is String Json
                 val parse = JSON.decode(response, YourBaseResponseClass::class.java)

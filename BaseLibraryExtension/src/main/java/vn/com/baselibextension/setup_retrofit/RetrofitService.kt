@@ -14,7 +14,7 @@ class RetrofitService<T>(val context: Context, val value: T) {
 
 
     private lateinit var processResponse: Process<T>
-    private var listResult: MutableList<ResultWrapper<T>> = ArrayList()
+    private var listResult: MutableList<suspend () -> ResultWrapper<T>> = ArrayList()
     private var request: Request<T> = Request()
 
     var end: () -> Unit = {}
@@ -57,18 +57,18 @@ class RetrofitService<T>(val context: Context, val value: T) {
         this.processResponse = process
     }
 
-    fun merge(vararg build: ResultWrapper<T>) = apply {
+    fun merge(vararg build: suspend () -> ResultWrapper<T>) = apply {
         listResult = build.toMutableList()
         return this
     }
 
-    fun merge(build: MutableList<ResultWrapper<T>>) = apply {
+    fun merge(build: MutableList<suspend () -> ResultWrapper<T>>) = apply {
         listResult = build
         return this
     }
 
     suspend fun build(repo: Repo, request: Request<T>): ResultWrapper<T> {
-        val process =  RequestProcess(repo,request, processResponse, context)
+        val process = RequestProcess(repo, request, processResponse, context)
         process.request.loading.invoke(true)
         return process.safeApiCall().apply {
             process.request.end.invoke()
@@ -76,10 +76,10 @@ class RetrofitService<T>(val context: Context, val value: T) {
         }
     }
 
-    fun buildMerge() {
+    suspend fun buildMerge() {
         loading.invoke(true)
         listResult.forEach {
-            if (it !is ResultWrapper.Success) {
+            if (it.invoke() !is ResultWrapper.Success) {
                 work.onError(ResultWrapper.Error((it as ResultWrapper.Error).code))
                 end.invoke()
                 loading.invoke(false)

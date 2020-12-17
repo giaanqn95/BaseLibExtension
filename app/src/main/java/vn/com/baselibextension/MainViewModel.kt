@@ -40,16 +40,16 @@ class MainViewModel() : ViewModel() {
     }
 
     fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
-        InjectContet.getRetro().merge(arrayOf(callFirst(), callSecond()).toMutableList()).setEnd {}.setLoading { }.work(
+        InjectContet.getRetro().merge(arrayOf(callFirst, callSecond).toMutableList()).setEnd {}.setLoading { }.work(
             onSuccess = { isSuccess.postValue(true) },
             onError = { isSuccess.postValue(false) },
-        ).buildMerge()
+        ).setLoading { LogCat.d("Loading is $it") }.buildMerge()
     }
 
-    suspend fun callFirst(): ResultWrapper<BaseResponse> {
+    val callFirst: suspend () -> ResultWrapper<BaseResponse> = {
         val header: HashMap<String, String> = HashMap()
         header["token"] = ""
-        return InjectContet.getRetro().build(
+        InjectContet.getRetro().build(
             Repo(
                 headers = header,
                 url = "user/register/",
@@ -62,10 +62,10 @@ class MainViewModel() : ViewModel() {
             ))
     }
 
-    suspend fun callSecond(): ResultWrapper<BaseResponse> {
+    val callSecond: suspend () -> ResultWrapper<BaseResponse> = {
         val header: HashMap<String, String> = HashMap()
         header["token"] = ""
-        return InjectContet.getRetro().build(
+        InjectContet.getRetro().build(
             Repo(
                 headers = header,
                 url = "user/register/",

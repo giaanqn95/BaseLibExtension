@@ -22,7 +22,7 @@ This library makes it easier and faster for devs to make API calls
 ```
 - Or return state request
 ```
-    suspend fun requestReturnState(uri: MultipartBody.Part?): ResultWrapper<YourBaseResponseClass> = 
+    suspend fun requestReturnState(): ResultWrapper<YourBaseResponseClass> = 
         RetrofitService<YourBaseResponseClass>().build(
             Repo(
                 headers = header,

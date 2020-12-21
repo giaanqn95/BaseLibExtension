@@ -1,4 +1,4 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension.utils
 
 import android.content.ContentResolver
 import android.content.ContentUris

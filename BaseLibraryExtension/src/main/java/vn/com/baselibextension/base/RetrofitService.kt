@@ -1,4 +1,4 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension.base
 
 import android.content.Context
 
@@ -15,7 +15,6 @@ class RetrofitService<T>(val context: Context, val value: T) {
 
     private lateinit var processResponse: Process<T>
     private var listResult: MutableList<suspend () -> ResultWrapper<T>> = ArrayList()
-    private var request: Request<T> = Request()
 
     var end: () -> Unit = {}
     var loading: (isLoading: Boolean) -> Unit = {}

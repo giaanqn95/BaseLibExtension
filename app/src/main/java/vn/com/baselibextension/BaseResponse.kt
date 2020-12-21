@@ -1,4 +1,4 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement

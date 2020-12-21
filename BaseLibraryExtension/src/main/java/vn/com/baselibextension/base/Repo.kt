@@ -1,4 +1,4 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension.base
 
 import okhttp3.MultipartBody
 

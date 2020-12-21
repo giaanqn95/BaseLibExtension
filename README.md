@@ -87,22 +87,13 @@ ApiClientModule.host = "base_url"
 Configure RetroService: 
   Example:
 ```
-class InjectRetroService {
+object InjectContext {
 
-    private lateinit var retrofitService: RetrofitService<YourBaseResponseClass>
+    lateinit var retrofitService: RetrofitService<BaseResponse>
 
-    companion object {
-        val instance by lazy {
-            InjectContext()
-        }
-
-        fun getRetro(): RetrofitService<YourBaseResponseClass> {
-            return instance.retrofitService
-        }
-
-        fun initRetroService(context: Context) = apply {
-            this.instance.retrofitService = RetrofitService(context, YourBaseResponseClass())
-        }
+    fun initRetroService(context: Context) {
+        retrofitService = RetrofitService(context, BaseResponse())
+        retrofitService.setProcessResponse(...)
     }
 }
 
@@ -112,7 +103,6 @@ class App : Application() {
         super.onCreate()
         ApiClientModule.host = "url"
         InjectContet.initRetroService(this)
-        InjectContet.getRetro().setProcessResponse(...)
     }
 }
 ```

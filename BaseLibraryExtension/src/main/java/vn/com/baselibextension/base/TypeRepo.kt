@@ -1,4 +1,4 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension.base
 
 /**
  * Created by giaan on 11/18/20.

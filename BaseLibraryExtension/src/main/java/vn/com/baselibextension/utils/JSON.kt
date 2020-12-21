@@ -1,8 +1,7 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension.utils
 
 import com.google.gson.GsonBuilder
 import org.json.JSONObject
-import vn.com.baselibextension.utils.LogCat
 
 /**
  * Created by giaan on 11/25/20.

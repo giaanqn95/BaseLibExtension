@@ -1,6 +1,10 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension
 
 import android.content.Context
+import vn.com.baselibextension.base.Repo
+import vn.com.baselibextension.base.Request
+import vn.com.baselibextension.base.RequestProcess
+import vn.com.baselibextension.base.ResultWrapper
 
 
 /**
@@ -10,38 +14,33 @@ import android.content.Context
  * Time: 10:36 AM
  */
 
-class RetrofitService<T>(val context: Context, val value: T) {
-
+class RetrofitService<T>(val context: Context) {
 
     private lateinit var processResponse: Process<T>
     private var listResult: MutableList<suspend () -> ResultWrapper<T>> = ArrayList()
-    private var request: Request<T> = Request()
 
     var end: () -> Unit = {}
     var loading: (isLoading: Boolean) -> Unit = {}
-    var work: Work<T> = object : Work<T> {
-        override fun onSuccess(result: ResultWrapper.Success<T>): ResultWrapper.Success<T> =
-            result
+    var work: Work = object : Work {
+        override fun onSuccess() {}
 
-        override fun onError(error: ResultWrapper.Error): ResultWrapper.Error = error
+        override fun onError(error: String) {}
     }
 
     inline fun work(
-        crossinline onSuccess: (success: ResultWrapper.Success<T>) -> Unit = {},
-        crossinline onError: (error: ResultWrapper.Error) -> Unit = {}
-    ) = work(object : Work<T> {
-        override fun onSuccess(result: ResultWrapper.Success<T>): ResultWrapper.Success<T> {
-            onSuccess.invoke(result)
-            return result
+        crossinline onSuccess: () -> Unit = {},
+        crossinline onError: (error: String) -> Unit = {}
+    ) = work(object : Work {
+        override fun onSuccess() {
+            onSuccess.invoke()
         }
 
-        override fun onError(error: ResultWrapper.Error): ResultWrapper.Error {
+        override fun onError(error: String) {
             onError.invoke(error)
-            return error
         }
     })
 
-    fun work(work: Work<T>) = apply {
+    fun work(work: Work) = apply {
         this.work = work
     }
 
@@ -80,23 +79,23 @@ class RetrofitService<T>(val context: Context, val value: T) {
         loading.invoke(true)
         listResult.forEach {
             if (it.invoke() !is ResultWrapper.Success) {
-                work.onError(ResultWrapper.Error((it as ResultWrapper.Error).code))
+                work.onError("${(it.invoke() as ResultWrapper.Error).message}")
                 end.invoke()
                 loading.invoke(false)
                 return
             }
         }
         loading.invoke(false)
-        work.onSuccess(ResultWrapper.Success(value))
+        work.onSuccess()
     }
 
     interface Process<T> {
         fun process(response: String, codeRequire: Any?): ResultWrapper<T>
     }
 
-    interface Work<T> {
-        fun onSuccess(result: ResultWrapper.Success<T>): ResultWrapper.Success<T>
+    interface Work {
+        fun onSuccess()
 
-        fun onError(error: ResultWrapper.Error): ResultWrapper.Error
+        fun onError(error: String)
     }
 }

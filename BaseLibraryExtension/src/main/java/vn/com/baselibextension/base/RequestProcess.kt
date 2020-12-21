@@ -1,4 +1,4 @@
-package vn.com.baselibextension.setup_retrofit
+package vn.com.baselibextension.base
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -10,8 +10,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import okhttp3.MultipartBody
 import retrofit2.HttpException
-import vn.com.baselibextension.dj.module.ApiClientModule
+import vn.com.baselibextension.RetrofitService
+import vn.com.baselibextension.setup_retrofit.ApiClientModule
+import vn.com.baselibextension.setup_retrofit.ApiInterface
 import vn.com.baselibextension.utils.Constants
+import vn.com.baselibextension.utils.JSON
 
 /**
  * Created by giaan on 12/16/20.

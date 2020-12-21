@@ -10,7 +10,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import vn.com.baselibextension.setup_retrofit.*
+import vn.com.baselibextension.InjectContext.retrofitService
+import vn.com.baselibextension.base.Repo
+import vn.com.baselibextension.base.Request
+import vn.com.baselibextension.base.ResultWrapper
+import vn.com.baselibextension.base.TypeRepo
 import vn.com.baselibextension.utils.LogCat
 
 /**
@@ -25,7 +29,7 @@ class MainViewModel() : ViewModel() {
     fun callSomething() = CoroutineScope(Dispatchers.IO).launch {
         val header: HashMap<String, String> = HashMap()
         header["token"] = ""
-        InjectContet.getRetro().build(
+        retrofitService.build(
             Repo(
                 headers = header,
                 url = "user/register/",
@@ -40,7 +44,7 @@ class MainViewModel() : ViewModel() {
     }
 
     fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
-        InjectContet.getRetro().merge(arrayOf(callFirst, callSecond).toMutableList()).setEnd {}.setLoading { }.work(
+        retrofitService.merge(arrayOf(callFirst, callSecond).toMutableList()).setEnd {}.setLoading { }.work(
             onSuccess = { isSuccess.postValue(true) },
             onError = { isSuccess.postValue(false) },
         ).setLoading { LogCat.d("Loading is $it") }.buildMerge()
@@ -49,7 +53,7 @@ class MainViewModel() : ViewModel() {
     val callFirst: suspend () -> ResultWrapper<BaseResponse> = {
         val header: HashMap<String, String> = HashMap()
         header["token"] = ""
-        InjectContet.getRetro().build(
+        retrofitService.build(
             Repo(
                 headers = header,
                 url = "user/register/",
@@ -65,7 +69,7 @@ class MainViewModel() : ViewModel() {
     val callSecond: suspend () -> ResultWrapper<BaseResponse> = {
         val header: HashMap<String, String> = HashMap()
         header["token"] = ""
-        InjectContet.getRetro().build(
+        retrofitService.build(
             Repo(
                 headers = header,
                 url = "user/register/",

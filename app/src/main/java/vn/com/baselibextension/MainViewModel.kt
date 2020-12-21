@@ -1,5 +1,6 @@
 package vn.com.baselibextension
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,66 +20,71 @@ import vn.com.baselibextension.utils.LogCat
  */
 class MainViewModel() : ViewModel() {
 
+    val isSuccess = MutableLiveData<Boolean>()
+
     fun callSomething() = CoroutineScope(Dispatchers.IO).launch {
-        InjectContet.getRetro().request(
+        val header: HashMap<String, String> = HashMap()
+        header["token"] = ""
+        InjectContet.getRetro().build(
             Repo(
-                headers = HashMap(),
-                url = KeyRequest.LOGIN.url,
-                message = LoginBinding("username", "Hash.getPublicKey(password)"),
-                codeRequired = "2000",
-                typeRepo = TypeRepo.POST
-            )
-        ).work(
-            onSuccess = {},
-            onError = {}
-        ).loading().build()
+                headers = header,
+                url = "user/register/",
+                message = "0901169215",
+                codeRequired = "200",
+                typeRepo = TypeRepo.GET
+            ),
+            Request<BaseResponse>().work(
+                onSuccess = { LogCat.d("onWork 1 - ${it.value.data()} ${it.value.message}") },
+                onError = { LogCat.d("onWork 1 - ${it.message}") }
+            ).loading {})
     }
 
     fun mergeFunc() = CoroutineScope(Dispatchers.IO).launch {
-        InjectContet.getRetro().merge(call1(), call2()).work(
-            onSuccess = { LogCat.d("mergeFunc onSuccess") },
-            onError = { LogCat.d("mergeFunc onError") }
-        ).end {
-
-        }.loading().buildMerge()
+        InjectContet.getRetro().merge(arrayOf(callFirst, callSecond).toMutableList()).setEnd {}.setLoading { }.work(
+            onSuccess = { isSuccess.postValue(true) },
+            onError = { isSuccess.postValue(false) },
+        ).setLoading { LogCat.d("Loading is $it") }.buildMerge()
     }
 
-    suspend fun call1(): ResultWrapper<BaseResponse> {
+    val callFirst: suspend () -> ResultWrapper<BaseResponse> = {
         val header: HashMap<String, String> = HashMap()
-        header["token"] =
-            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDU4MzkzNTQ3MDksImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNTc1Mjk1NDcwOX0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiIwNTExYzhmZTAwMDFiMmJiMjUzNDAxNzVkZTU1OWY1NSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.XI11QCu85NehY4yn2r5g7srSDrf3GLH5rV2HXBSw2sFib7q-8ENntmL1rhLqaDqV_aFIwzZiNiX0a_iLDa4ImHdo_X48Ta7XjgpMdRm3AJbQ8ympBMuvM7RPfo2s_uYQ5l29V4rwd7k7B2ffZNhSsk_rk5DZMwagsgTqW6TDWvxpwSSBRWUm1LheruduvvxHO13WZuWhklhWaYHKS-07iFyoQV5OjilgFFDN0y4JKcP19uyaECC1S9p0WVS60SVcTMx8N3wpdHJbXQVuZywP18BfHHspsg6ENfitK0CiZZLrRm0beF-an8RmHXg845I092Ts5DJ5YHrhE9xxNz25qw"
-        return InjectContet.getRetro().request(
+        header["token"] = ""
+        InjectContet.getRetro().build(
             Repo(
                 headers = header,
-                url = KeyRequest.SUBMIT_OTP.url,
-                message = null,
-                codeRequired = "CARD_2001",
+                url = "user/register/",
+                message = "0901169215",
+                codeRequired = "USERNAME_2000",
                 typeRepo = TypeRepo.GET
-            )
-        ).build()
+            ), Request<BaseResponse>().work(
+                onSuccess = { LogCat.d("onWork 1 - ${it.value.data()} ${it.value.message}") },
+                onError = { LogCat.d("onWork 1 - ${it.message}") }
+            ))
     }
 
-    suspend fun call2(): ResultWrapper<BaseResponse> {
+    val callSecond: suspend () -> ResultWrapper<BaseResponse> = {
         val header: HashMap<String, String> = HashMap()
-        header["token"] =
-            "eyJhdXRoIjp7ImNpZiI6ImlzbHAwMDAwMDAwMDE4MCIsInVzZXJJZCI6ImlzbHAwMDAwMDAwMDE4MCIsImRldmljZUlkIjpudWxsLCJ0b2tlblR5cGUiOjEsImRldmljZVN0YXR1cyI6bnVsbCwiZXhwaXJlQXQiOjE2MDU4MzkzNTQ3MDksImFjdGl2ZVRpbWUiOjM2MDAwMDAsImNyZWF0ZWRBdCI6MTYwNTc1Mjk1NDcwOX0sImFsZyI6IlJTMjU2In0.eyJqdGkiOiIwNTExYzhmZTAwMDFiMmJiMjUzNDAxNzVkZTU1OWY1NSIsInVzZXJJZCI6eyJjaWYiOiJpc2xwMDAwMDAwMDAxODAiLCJ1c2VybmFtZSI6IjA5MDI5NzE3NTEiLCJlbWFpbCI6bnVsbCwicGhvbmUiOm51bGwsImRldmljZUlkIjpudWxsLCJhY2NvdW50VHlwZSI6bnVsbCwibGFuZ3VhZ2UiOm51bGwsImN1c3RvbWVyTmFtZSI6bnVsbCwic2V4IjpudWxsLCJ1c2VySWQiOiJpc2xwMDAwMDAwMDAxODAiLCJtZXJjaGFudElkIjpudWxsLCJzdG9yZUlkIjpudWxsfX0.XI11QCu85NehY4yn2r5g7srSDrf3GLH5rV2HXBSw2sFib7q-8ENntmL1rhLqaDqV_aFIwzZiNiX0a_iLDa4ImHdo_X48Ta7XjgpMdRm3AJbQ8ympBMuvM7RPfo2s_uYQ5l29V4rwd7k7B2ffZNhSsk_rk5DZMwagsgTqW6TDWvxpwSSBRWUm1LheruduvvxHO13WZuWhklhWaYHKS-07iFyoQV5OjilgFFDN0y4JKcP19uyaECC1S9p0WVS60SVcTMx8N3wpdHJbXQVuZywP18BfHHspsg6ENfitK0CiZZLrRm0beF-an8RmHXg845I092Ts5DJ5YHrhE9xxNz25qw"
-        return InjectContet.getRetro().request(
+        header["token"] = ""
+        InjectContet.getRetro().build(
             Repo(
                 headers = header,
-                url = KeyRequest.SUBMIT_OTP.url,
-                message = null,
-                codeRequired = "CARD_2001",
+                url = "user/register/",
+                message = "0901169215",
+                codeRequired = "USERNAME_2000",
                 typeRepo = TypeRepo.GET
-            )
-        ).build()
+            ), Request<BaseResponse>().work(
+                onSuccess = { LogCat.d("onWork 2 - ${it.value.data()} ${it.value.message}") },
+                onError = { LogCat.d("onWork 2 - ${it.message}") }
+            ))
     }
 
     fun repeat(): Flow<ResultWrapper<BaseResponse>> = flow {
-        emit(call2())
+        emit(callSecond())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val _stateFlow = MutableStateFlow(BaseResponse())
+
     @OptIn(ExperimentalCoroutinesApi::class)
     var stateFlow: StateFlow<BaseResponse> = MutableStateFlow(BaseResponse())
 }

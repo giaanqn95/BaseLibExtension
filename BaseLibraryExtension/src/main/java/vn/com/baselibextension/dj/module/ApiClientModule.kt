@@ -1,10 +1,10 @@
 package vn.com.baselibextension.dj.module
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import vn.com.baselibextension.setup_retrofit.ApiInterface
 import vn.com.baselibextension.setup_retrofit.UnsafeOkHttpClient

@@ -7,5 +7,5 @@ package vn.com.baselibextension.setup_retrofit
  */
 
 enum class TypeRepo {
-    GET, POST, PUT, DELETE
+    GET, POST, PUT, DELETE, POST_MULTIPART
 }

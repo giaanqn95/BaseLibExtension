@@ -1,12 +1,9 @@
 package vn.com.baselibextension.setup_retrofit
 
-import dagger.Module
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-
-@Module
 object ApiClientModule {
 
     var host = ""

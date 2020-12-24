@@ -14,7 +14,7 @@ This library makes it easier and faster for devs to make API calls
                 codeRequired = "CodeSuccessAPI",
                 typeRepo = TypeRepo.GET
             ),
-            Request<BaseResponse>().work(
+            Request<Ba cseResponse>().work(
             onSuccess = { //Do something },
             onError = { //Do something }
         ))
@@ -63,7 +63,7 @@ This library makes it easier and faster for devs to make API calls
         ).buildMerge()
     }
     
- val callFirst: suspend () -> ResultWrapper<BaseResponse> = {
+ val callFirst: suspend () -> ResultWrapper<YourBaseResponseClass> = {
         val header: HashMap<String, String> = HashMap()
         header["token"] = ""
         InjectContet.getRetro().build(
@@ -89,10 +89,10 @@ Configure RetroService:
 ```
 object InjectContext {
 
-    lateinit var retrofitService: RetrofitService<BaseResponse>
+    lateinit var retrofitService: RetrofitService<YourBaseResponseClass>
 
     fun initRetroService(context: Context) {
-        retrofitService = RetrofitService(context, BaseResponse())
+        retrofitService = RetrofitService(context, YourBaseResponseClass())
         retrofitService.setProcessResponse(...)
     }
 }

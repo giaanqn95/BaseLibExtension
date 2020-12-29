@@ -118,14 +118,20 @@ class RequestProcess<T>(val repo: Repo, val request: Request<T>, var processResp
                 when (throwable) {
                     is HttpException -> {
                         val code = throwable.code()
-                        if (code in 500..599)
-                            return@withTimeout request.work.onError(ResultWrapper.Error("$code", throwable.message))
-                        else if (code in 400..499)
-                            return@withTimeout request.work.onError(ResultWrapper.Error("$code", throwable.message))
-
-                        return@withTimeout request.work.onError(ResultWrapper.Error("$code", throwable.message))
+                        if (code in 500..599) {
+                            request.work.onError(ResultWrapper.Error("$code", throwable.message))
+                            return@withTimeout ResultWrapper.Error("$code", throwable.message)
+                        } else if (code in 400..499) {
+                            request.work.onError(ResultWrapper.Error("$code", throwable.message))
+                            return@withTimeout ResultWrapper.Error("$code", throwable.message)
+                        }
+                        request.work.onError(ResultWrapper.Error("$code", throwable.message))
+                        return@withTimeout ResultWrapper.Error("$code", throwable.message)
                     }
-                    else -> return@withTimeout request.work.onError(ResultWrapper.Error("", throwable.message))
+                    else -> {
+                        request.work.onError(ResultWrapper.Error("", throwable.message))
+                        return@withTimeout ResultWrapper.Error("", throwable.message)
+                    }
                 }
             }
         }

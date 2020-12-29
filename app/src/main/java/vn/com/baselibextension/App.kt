@@ -13,7 +13,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        ApiClientModule.host = "https://api.tiktik.dev.intelin.vn"
+        ApiClientModule.setUrl("https://api.tiktik.dev.intelin.vn").setTimeOut(150000)
         initRetroService(this)
     }
 }

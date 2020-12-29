@@ -8,6 +8,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiClientModule {
 
     var host = ""
+    var timeOut = 15000L
+
+    @JvmName("setTimeOut1")
+    fun setTimeOut(timeOut: Long) = apply {
+        this.timeOut = timeOut
+    }
+
+    fun setUrl(url: String) = apply {
+        this.host = url
+    }
 
     fun client(): Retrofit {
         val httpClient = UnsafeOkHttpClient.unsafeOkHttpClient
@@ -18,6 +28,7 @@ object ApiClientModule {
             .client(httpClient)
             .build()
     }
+
     fun providePostApi(): ApiInterface {
         return client().create(ApiInterface::class.java)
     }

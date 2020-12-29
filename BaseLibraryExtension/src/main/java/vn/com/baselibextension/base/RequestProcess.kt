@@ -23,7 +23,7 @@ import vn.com.baselibextension.utils.JSON
 class RequestProcess<T>(val repo: Repo, val request: Request<T>, var processResponse: RetrofitService.Process<T>, val context: Context) {
 
     lateinit var apiCall: (suspend () -> T)
-    var codeRequired: Any? = Any()
+    var codeRequired: Any? = repo.codeRequired
 
     init {
         request()
@@ -31,48 +31,43 @@ class RequestProcess<T>(val repo: Repo, val request: Request<T>, var processResp
 
     private var apiInterface: ApiInterface = ApiClientModule.providePostApi()
 
-    private suspend fun getMethod(headers: Map<String, String>, url: String, message: Any? = null, codeRequired: Any?) {
+    private suspend fun getMethod(headers: Map<String, String>, url: String, message: Any? = null) {
         this.apiCall = { apiInterface.get(headers, url + message) }
-        this.codeRequired = codeRequired
     }
 
-    private suspend fun postMethod(headers: Map<String, String>, url: String, message: Any? = null, codeRequired: Any?) = apply {
+    private suspend fun postMethod(headers: Map<String, String>, url: String, message: Any? = null) = apply {
         this.apiCall = { apiInterface.post(headers, url, message) }
-        this.codeRequired = codeRequired
         return this
     }
 
-    private suspend fun putMethod(headers: Map<String, String>, url: String, message: Any? = null, codeRequired: Any?) {
+    private suspend fun putMethod(headers: Map<String, String>, url: String, message: Any? = null) {
         this.apiCall = { apiInterface.put(headers, url, message) }
-        this.codeRequired = codeRequired
     }
 
-    private suspend fun deleteMethod(headers: Map<String, String>, url: String, message: Any?, codeRequired: Any?) {
+    private suspend fun deleteMethod(headers: Map<String, String>, url: String, message: Any?) {
         this.apiCall = { apiInterface.delete(headers, url, message) }
-        this.codeRequired = codeRequired
     }
 
-    private suspend fun uploadFile(url: String, message: MultipartBody.Part?, codeRequired: Any?) {
+    private suspend fun uploadFile(url: String, message: MultipartBody.Part?) {
         this.apiCall = { apiInterface.uploadFile(url, message) }
-        this.codeRequired = codeRequired
     }
 
     fun request() = CoroutineScope(Dispatchers.IO).launch {
         when (repo.typeRepo) {
             TypeRepo.GET -> {
-                getMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
+                getMethod(repo.headers, repo.url, repo.message)
             }
             TypeRepo.POST -> {
-                postMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
+                postMethod(repo.headers, repo.url, repo.message)
             }
             TypeRepo.PUT -> {
-                putMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
+                putMethod(repo.headers, repo.url, repo.message)
             }
             TypeRepo.DELETE -> {
-                deleteMethod(repo.headers, repo.url, repo.message, repo.codeRequired)
+                deleteMethod(repo.headers, repo.url, repo.message)
             }
             TypeRepo.POST_MULTIPART -> {
-                uploadFile(repo.url, repo.multiPart, repo.codeRequired)
+                uploadFile(repo.url, repo.multiPart)
             }
         }
     }

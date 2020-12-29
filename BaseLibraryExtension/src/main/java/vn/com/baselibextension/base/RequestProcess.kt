@@ -48,8 +48,8 @@ class RequestProcess<T>(val repo: Repo, val request: Request<T>, var processResp
         this.apiCall = { apiInterface.delete(headers, url, message) }
     }
 
-    private suspend fun uploadFile(url: String, message: MultipartBody.Part?) {
-        this.apiCall = { apiInterface.uploadFile(url, message) }
+    private suspend fun uploadFile(headers: Map<String, String>, url: String, message: MultipartBody.Part?) {
+        this.apiCall = { apiInterface.uploadFile(headers, url, message) }
     }
 
     fun request() = CoroutineScope(Dispatchers.IO).launch {
@@ -67,7 +67,7 @@ class RequestProcess<T>(val repo: Repo, val request: Request<T>, var processResp
                 deleteMethod(repo.headers, repo.url, repo.message)
             }
             TypeRepo.POST_MULTIPART -> {
-                uploadFile(repo.url, repo.multiPart)
+                uploadFile(repo.headers, repo.url, repo.multiPart)
             }
         }
     }

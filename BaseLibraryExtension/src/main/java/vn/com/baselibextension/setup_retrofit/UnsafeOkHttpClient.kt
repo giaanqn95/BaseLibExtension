@@ -2,12 +2,14 @@ package vn.com.baselibextension.setup_retrofit
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import vn.com.baselibextension.utils.Constants
 import java.io.IOException
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSession
@@ -51,6 +53,7 @@ class UnsafeOkHttpClient {
                 builder.hostnameVerifier { hostname: String?, session: SSLSession? -> true }
                 val logging = HttpLoggingInterceptor()
                 logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+                builder.protocols(Collections.singletonList(Protocol.HTTP_1_1))
                 builder.addInterceptor(logging)
                     .callTimeout(ApiClientModule.timeOut, TimeUnit.MILLISECONDS)
                     .readTimeout(ApiClientModule.timeOut, TimeUnit.MILLISECONDS)
